@@ -240,6 +240,53 @@ main {
   transform: translateY(-1px);
 }
 
+.accordion-section {
+  max-width: 980px;
+  margin: 3rem auto 0;
+}
+
+.bootstrap-accordion {
+  --bs-accordion-bg: rgba(255,255,255,0.9);
+  --bs-accordion-color: var(--text);
+  --bs-accordion-border-color: var(--line);
+  --bs-accordion-btn-bg: rgba(255,255,255,0.96);
+  --bs-accordion-btn-color: var(--text);
+  --bs-accordion-active-bg: rgba(238,245,255,0.96);
+  --bs-accordion-active-color: var(--intel-blue-deep);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem rgba(0, 113, 197, 0.2);
+  --bs-accordion-border-radius: 20px;
+  --bs-border-radius: 16px;
+}
+
+.bootstrap-accordion .accordion-item {
+  border: 1px solid var(--line);
+  border-radius: 20px !important;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.bootstrap-accordion .accordion-button {
+  font-weight: 700;
+  font-size: 1.02rem;
+  padding: 1.1rem 1.25rem;
+}
+
+.bootstrap-accordion .accordion-button:not(.collapsed) {
+  background: rgba(238,245,255,0.96);
+  color: var(--intel-blue-deep);
+  box-shadow: none;
+}
+
+.bootstrap-accordion .accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(0, 113, 197, 0.2);
+}
+
+.bootstrap-accordion .accordion-body {
+  color: var(--muted);
+  padding: 1.1rem 1.25rem 1.4rem;
+  background: rgba(255,255,255,0.9);
+}
+
 .newsletter {
   margin-top: 3.2rem;
   padding: 2.2rem 1.5rem 2.5rem;
