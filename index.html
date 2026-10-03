@@ -203,6 +203,8 @@
     </div>
   </footer>
 
+  <button class="scroll-top" type="button" aria-label="Scroll to top">↑</button>
+
   <script>
     const translations = {
       en: {
@@ -283,10 +285,39 @@
       }
     };
 
+    const rtlLanguages = new Set(['ar', 'fa', 'he', 'ur', 'ps', 'ku', 'sd', 'yi']);
+
+    function detectLanguage() {
+      const htmlLang = (document.documentElement.lang || '').toLowerCase();
+      const bodyLang = (document.body.lang || '').toLowerCase();
+      const ancestorLang = document.querySelector('[lang]')?.lang?.toLowerCase();
+      const directLang = htmlLang || bodyLang || ancestorLang || navigator.language || 'en';
+      return directLang.split('-')[0];
+    }
+
+    function isRtlLanguage(lang) {
+      if (!lang) return false;
+      const normalized = lang.toLowerCase().split('-')[0];
+      if (rtlLanguages.has(normalized)) return true;
+
+      const rtlRegex = /[\u0591-\u08FF\uFB1D-\uFB4F]/;
+      return rtlRegex.test(document.body.textContent || '');
+    }
+
+    function applyDirection(lang) {
+      const normalized = (lang || 'en').toLowerCase().split('-')[0];
+      const shouldUseRtl = isRtlLanguage(normalized) || document.body.dir === 'rtl' || document.documentElement.dir === 'rtl';
+      const direction = shouldUseRtl ? 'rtl' : 'ltr';
+
+      document.documentElement.lang = normalized;
+      document.documentElement.dir = direction;
+      document.body.dir = direction;
+    }
+
     function setLanguage(lang) {
       const supported = translations[lang] ? lang : 'en';
       document.documentElement.lang = supported;
-      document.body.dir = supported === 'ar' ? 'rtl' : 'ltr';
+      applyDirection(supported);
 
       document.querySelectorAll('[data-i18n]').forEach((element) => {
         const key = element.dataset.i18n;
@@ -307,11 +338,52 @@
       });
     }
 
+    function monitorLanguageChanges() {
+      const updateFromDetectedLanguage = () => {
+        const detectedLang = detectLanguage();
+        const supported = translations[detectedLang] ? detectedLang : 'en';
+        setLanguage(supported);
+      };
+
+      updateFromDetectedLanguage();
+
+      const observer = new MutationObserver(() => {
+        updateFromDetectedLanguage();
+      });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['lang', 'dir']
+      });
+
+      document.body.addEventListener('langchange', updateFromDetectedLanguage);
+      window.addEventListener('languagechange', updateFromDetectedLanguage);
+    }
+
     document.querySelectorAll('.lang-link').forEach((button) => {
       button.addEventListener('click', () => setLanguage(button.dataset.lang));
     });
 
-    setLanguage('en');
+    const scrollTopButton = document.querySelector('.scroll-top');
+
+    const toggleScrollTopButton = () => {
+      if (!scrollTopButton) return;
+      if (window.scrollY > 300) {
+        scrollTopButton.classList.add('visible');
+      } else {
+        scrollTopButton.classList.remove('visible');
+      }
+    };
+
+    if (scrollTopButton) {
+      scrollTopButton.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      window.addEventListener('scroll', toggleScrollTopButton, { passive: true });
+      toggleScrollTopButton();
+    }
+
+    monitorLanguageChanges();
   </script>
 </body>
 </html>
